@@ -65,10 +65,14 @@ func TestMakeDirectory(t *testing.T) {
 		readOnlyDir := "read_only_directory"
 		childDir := readOnlyDir + "/child_directory"
 		defer os.RemoveAll(readOnlyDir)
-		os.Mkdir(readOnlyDir, 0444) // Read-only permission
 
-		err := MakeDirectory(childDir)
-		if err == nil {
+		// Create the read-only directory
+		if err := os.Mkdir(readOnlyDir, 0444); err != nil {
+			t.Fatalf("Failed to create read-only directory: %v", err)
+		}
+
+		// Attempt to create a child directory in the read-only parent directory
+		if err := MakeDirectory(childDir); err == nil {
 			t.Errorf("Expected an error for read-only parent directory, but got none")
 		}
 	})
